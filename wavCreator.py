@@ -4,6 +4,7 @@ import numpy as np
 from scipy import signal
 import torch
 
+#digital bandpass filter of wav file
 def bandpass(sig):
     order = 4
     low_cutoff = 60
@@ -12,7 +13,7 @@ def bandpass(sig):
     filtered_sig = signal.filtfilt(th[0], th[1], sig)
     filtered_sig = [int(val) for val in filtered_sig]
     filtered_sig = np.array(filtered_sig)
-    filtered_sig = filtered_sig/np.max(np.abs(filtered_sig)) * np.max(np.abs(sig))
+    #filtered_sig = filtered_sig/np.max(np.abs(filtered_sig)) * np.max(np.abs(sig))
     for i, val in enumerate(filtered_sig):
         if (val > 32767):
             val = 32767
@@ -21,6 +22,7 @@ def bandpass(sig):
     filtered_sig = np.array([np.int16(val) for val in filtered_sig], dtype=np.int16)
     return filtered_sig
 
+#processes ADC array and creates wav file
 def wav():
     intTotal = []
     oldInt = 0
@@ -44,7 +46,7 @@ def wav():
         wav_file.setnframes(80000)
         wav_file.writeframes(data.tobytes())
 
-
+#opens Serial monitor and facilitates UART communication
 ser = serial.Serial('COM4', baudrate=1000000)
 
 print("Connected to", ser.port)

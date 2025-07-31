@@ -12,7 +12,7 @@ import pandas as pd
 import plotly.express as px
 import matplotlib.pyplot as plt
 
-
+#loads model
 model = torch.jit.load("final_emotion_model_scripted.pt", map_location="cpu")
 model.eval()
 model.double()
@@ -21,6 +21,7 @@ emotion = "Neutral"
 gender = "Male"
 speaking_rate, pitch_mean, pitch_std, rms, relative_db = 0, 0, 0, 0, 0
 
+#GUI title, project members, explanation
 st.title("Embedded Real-Time Speech Classifier")
 st.text("Norman Smith and Vignesh Saravanan")
 st.text("Our project performs real-time speech classification from 5-second clips recorded by the MAX9814 microphone module. A DMA channel running on an STM32L476RG microcontroller continually "
@@ -35,6 +36,7 @@ displayed = st.dataframe(ser)
 sr_value, x_value = scipy.io.wavfile.read("output.wav")
 f, t, Sxx = scipy.signal.spectrogram(x_value, sr_value)
 
+#plots spectrogram
 fig, ax = plt.subplots(figsize=(10, 4))
 mesh = ax.pcolormesh(t, f, 10 * np.log10(Sxx), shading="gouraud")
 ax.set_ylabel("Frequency (Hz")
@@ -45,6 +47,7 @@ temp = st.pyplot(fig)
 
 
 while True:
+    #unpacks wav file, converting into a tensor
     data, sr = sf.read("output.wav")
 
     if len(data.shape) == 1:
@@ -53,6 +56,7 @@ while True:
     else:
         wav = torch.tensor(data).T
 
+    #processes tensor data, converting into human-readable form
     wav = wav.type('torch.DoubleTensor')
     output = model(wav)
     emotion_logits = output[0][0]
@@ -97,6 +101,7 @@ while True:
     sr_value, x_value = scipy.io.wavfile.read("output.wav")
     f, t, Sxx = scipy.signal.spectrogram(x_value, sr_value)
 
+    #new spectrogram
     temp.empty()
     fig, ax = plt.subplots(figsize=(10, 4))
     mesh = ax.pcolormesh(t, f, 10 * np.log10(Sxx), shading="gouraud")
